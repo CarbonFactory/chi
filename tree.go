@@ -26,11 +26,12 @@ const (
 	mPATCH
 	mPOST
 	mPUT
+	mPURGE
 	mTRACE
 )
 
 var mALL = mCONNECT | mDELETE | mGET | mHEAD |
-	mOPTIONS | mPATCH | mPOST | mPUT | mTRACE
+	mOPTIONS | mPATCH | mPOST | mPUT | mPURGE | mTRACE
 
 var methodMap = map[string]methodTyp{
 	http.MethodConnect: mCONNECT,
@@ -41,6 +42,7 @@ var methodMap = map[string]methodTyp{
 	http.MethodPatch:   mPATCH,
 	http.MethodPost:    mPOST,
 	http.MethodPut:     mPUT,
+	http.MethodPurge:   mPURGE,
 	http.MethodTrace:   mTRACE,
 }
 

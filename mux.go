@@ -176,6 +176,12 @@ func (mx *Mux) Put(pattern string, handlerFn http.HandlerFunc) {
 	mx.handle(mPUT, pattern, handlerFn)
 }
 
+// Purge adds the route `pattern` that matches a PURGE http method to
+// execute the `handlerFn` http.HandlerFunc.
+func (mx *Mux) Purge(pattern string, handlerFn http.HandlerFunc) {
+	mx.handle(mPURGE, pattern, handlerFn)
+}
+
 // Trace adds the route `pattern` that matches a TRACE http method to
 // execute the `handlerFn` http.HandlerFunc.
 func (mx *Mux) Trace(pattern string, handlerFn http.HandlerFunc) {
