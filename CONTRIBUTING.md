@@ -6,8 +6,8 @@
 2. Download the sources and switch the working directory:
 
     ```bash
-    go get -u -d github.com/go-chi/chi
-    cd $GOPATH/src/github.com/go-chi/chi
+    go get -u -d github.com/CarbonFactory/chi
+    cd $GOPATH/src/github.com/CarbonFactory/chi
     ```
 
 ## Submitting a Pull Request

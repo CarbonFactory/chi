@@ -14,12 +14,12 @@ public API service, which in turn powers all of our client-side applications.
 
 The key considerations of chi's design are: project structure, maintainability, standard http
 handlers (stdlib-only), developer productivity, and deconstructing a large system into many small
-parts. The core router `github.com/go-chi/chi` is quite small (less than 1000 LOC), but we've also
+parts. The core router `github.com/CarbonFactory/chi` is quite small (less than 1000 LOC), but we've also
 included some useful/optional subpackages: [middleware](/middleware), [render](https://github.com/go-chi/render) and [docgen](https://github.com/go-chi/docgen). We hope you enjoy it too!
 
 ## Install
 
-`go get -u github.com/go-chi/chi`
+`go get -u github.com/CarbonFactory/chi`
 
 
 ## Features
@@ -29,14 +29,14 @@ included some useful/optional subpackages: [middleware](/middleware), [render](h
 * **100% compatible with net/http** - use any http or middleware pkg in the ecosystem that is also compatible with `net/http`
 * **Designed for modular/composable APIs** - middlewares, inline middlewares, route groups and subrouter mounting
 * **Context control** - built on new `context` package, providing value chaining, cancellations and timeouts
-* **Robust** - in production at Pressly, CloudFlare, Heroku, 99Designs, and many others (see [discussion](https://github.com/go-chi/chi/issues/91))
+* **Robust** - in production at Pressly, CloudFlare, Heroku, 99Designs, and many others (see [discussion](https://github.com/CarbonFactory/chi/issues/91))
 * **Doc generation** - `docgen` auto-generates routing documentation from your source to JSON or Markdown
 * **No external dependencies** - plain ol' Go stdlib + net/http
 
 
 ## Examples
 
-See [_examples/](https://github.com/go-chi/chi/blob/master/_examples/) for a variety of examples.
+See [_examples/](https://github.com/CarbonFactory/chi/blob/master/_examples/) for a variety of examples.
 
 
 **As easy as:**
@@ -46,7 +46,7 @@ package main
 
 import (
 	"net/http"
-	"github.com/go-chi/chi"
+	"github.com/CarbonFactory/chi"
 )
 
 func main() {
@@ -61,18 +61,18 @@ func main() {
 **REST Preview:**
 
 Here is a little preview of how routing looks like with chi. Also take a look at the generated routing docs
-in JSON ([routes.json](https://github.com/go-chi/chi/blob/master/_examples/rest/routes.json)) and in
-Markdown ([routes.md](https://github.com/go-chi/chi/blob/master/_examples/rest/routes.md)).
+in JSON ([routes.json](https://github.com/CarbonFactory/chi/blob/master/_examples/rest/routes.json)) and in
+Markdown ([routes.md](https://github.com/CarbonFactory/chi/blob/master/_examples/rest/routes.md)).
 
-I highly recommend reading the source of the [examples](https://github.com/go-chi/chi/blob/master/_examples/) listed
+I highly recommend reading the source of the [examples](https://github.com/CarbonFactory/chi/blob/master/_examples/) listed
 above, they will show you all the features of chi and serve as a good form of documentation.
 
 ```go
 import (
   //...
   "context"
-  "github.com/go-chi/chi"
-  "github.com/go-chi/chi/middleware"
+  "github.com/CarbonFactory/chi"
+  "github.com/CarbonFactory/chi/middleware"
 )
 
 func main() {
@@ -429,7 +429,7 @@ Copyright (c) 2015-present [Peter Kieltyka](https://github.com/pkieltyka)
 
 Licensed under [MIT License](./LICENSE)
 
-[GoDoc]: https://godoc.org/github.com/go-chi/chi
-[GoDoc Widget]: https://godoc.org/github.com/go-chi/chi?status.svg
+[GoDoc]: https://godoc.org/github.com/CarbonFactory/chi
+[GoDoc Widget]: https://godoc.org/github.com/CarbonFactory/chi?status.svg
 [Travis]: https://travis-ci.org/go-chi/chi
 [Travis Widget]: https://travis-ci.org/go-chi/chi.svg?branch=master

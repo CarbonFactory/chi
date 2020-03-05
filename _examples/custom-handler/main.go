@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/CarbonFactory/chi"
 )
 
 type Handler func(w http.ResponseWriter, r *http.Request) error

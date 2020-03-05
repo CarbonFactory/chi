@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-chi/chi"
+	"github.com/CarbonFactory/chi"
 )
 
 func TestCompressor(t *testing.T) {

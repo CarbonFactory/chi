@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/go-chi/chi"
+	"github.com/CarbonFactory/chi"
 )
 
 func main() {

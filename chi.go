@@ -9,8 +9,8 @@
 //  import (
 //  	"net/http"
 //
-//  	"github.com/go-chi/chi"
-//  	"github.com/go-chi/chi/middleware"
+//  	"github.com/CarbonFactory/chi"
+//  	"github.com/CarbonFactory/chi/middleware"
 //  )
 //
 //  func main() {
@@ -25,7 +25,7 @@
 //  	http.ListenAndServe(":3333", r)
 //  }
 //
-// See github.com/go-chi/chi/_examples/ for more in-depth examples.
+// See github.com/CarbonFactory/chi/_examples/ for more in-depth examples.
 //
 // URL patterns allow for easy matching of path components in HTTP
 // requests. The matching components can then be accessed using

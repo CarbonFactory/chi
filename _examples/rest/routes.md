@@ -1,4 +1,4 @@
-# github.com/go-chi/chi
+# github.com/CarbonFactory/chi
 
 Welcome to the chi/_examples/rest generated docs.
 

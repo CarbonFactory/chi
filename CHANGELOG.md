@@ -5,19 +5,19 @@
 - core: fix regexp routing to include default value when param is not matched
 - middleware: rewrite of middleware.Compress
 - middleware: suppress http.ErrAbortHandler in middleware.Recoverer
-- History of changes: see https://github.com/go-chi/chi/compare/v4.0.2...v4.0.3
+- History of changes: see https://github.com/CarbonFactory/chi/compare/v4.0.2...v4.0.3
 
 
 ## v4.0.2 (2019-02-26)
 
 - Minor fixes
-- History of changes: see https://github.com/go-chi/chi/compare/v4.0.1...v4.0.2
+- History of changes: see https://github.com/CarbonFactory/chi/compare/v4.0.1...v4.0.2
 
 
 ## v4.0.1 (2019-01-21)
 
 - Fixes issue with compress middleware: #382 #385
-- History of changes: see https://github.com/go-chi/chi/compare/v4.0.0...v4.0.1
+- History of changes: see https://github.com/CarbonFactory/chi/compare/v4.0.0...v4.0.1
 
 
 ## v4.0.0 (2019-01-10)
@@ -27,20 +27,20 @@
 - router: additional check to ensure wildcard is at the end of a url pattern (#333)
 - middleware: deprecate use of http.CloseNotifier (#347)
 - middleware: fix RedirectSlashes to include query params on redirect (#334)
-- History of changes: see https://github.com/go-chi/chi/compare/v3.3.4...v4.0.0
+- History of changes: see https://github.com/CarbonFactory/chi/compare/v3.3.4...v4.0.0
 
 
 ## v3.3.4 (2019-01-07)
 
 - Minor middleware improvements. No changes to core library/router. Moving v3 into its
 - own branch as a version of chi for Go 1.7, 1.8, 1.9, 1.10, 1.11
-- History of changes: see https://github.com/go-chi/chi/compare/v3.3.3...v3.3.4
+- History of changes: see https://github.com/CarbonFactory/chi/compare/v3.3.3...v3.3.4
 
 
 ## v3.3.3 (2018-08-27)
 
 - Minor release
-- See https://github.com/go-chi/chi/compare/v3.3.2...v3.3.3
+- See https://github.com/CarbonFactory/chi/compare/v3.3.2...v3.3.3
 
 
 ## v3.3.2 (2017-12-22)
@@ -87,7 +87,7 @@
 - Move `render` sub-pkg to https://github.com/go-chi/render
 - Add new `URLFormat` handler to chi/middleware sub-pkg to make working with url mime 
   suffixes easier, ie. parsing `/articles/1.json` and `/articles/1.xml`. See comments in
-  https://github.com/go-chi/chi/blob/master/middleware/url_format.go for example usage.
+  https://github.com/CarbonFactory/chi/blob/master/middleware/url_format.go for example usage.
 
 
 ## v3.0.0 (2017-06-21)
@@ -106,8 +106,8 @@
 - Add support for LINK/UNLINK http methods via `r.Method()` and `r.MethodFunc()`
 - Moved the chi project to its own organization, to allow chi-related community packages to
   be easily discovered and supported, at: https://github.com/go-chi
-- *NOTE:* please update your import paths to `"github.com/go-chi/chi"`
-- *NOTE:* chi v2 is still available at https://github.com/go-chi/chi/tree/v2
+- *NOTE:* please update your import paths to `"github.com/CarbonFactory/chi"`
+- *NOTE:* chi v2 is still available at https://github.com/CarbonFactory/chi/tree/v2
 
 
 ## v2.1.0 (2017-03-30)
@@ -149,11 +149,11 @@
 
 ## v1.0.0 (2016-07-01)
 
-- Released chi v1 stable https://github.com/go-chi/chi/tree/v1.0.0 for Go 1.6 and older.
+- Released chi v1 stable https://github.com/CarbonFactory/chi/tree/v1.0.0 for Go 1.6 and older.
 
 
 ## v0.9.0 (2016-03-31)
 
-- Reuse context objects via sync.Pool for zero-allocation routing [#33](https://github.com/go-chi/chi/pull/33)
+- Reuse context objects via sync.Pool for zero-allocation routing [#33](https://github.com/CarbonFactory/chi/pull/33)
 - BREAKING NOTE: due to subtle API changes, previously `chi.URLParams(ctx)["id"]` used to access url parameters
   has changed to: `chi.URLParam(ctx, "id")`

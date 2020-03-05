@@ -98,7 +98,7 @@ func NewCompressor(level int, types ...string) *Compressor {
 	// TODO:
 	// lzma: Opera.
 	// sdch: Chrome, Android. Gzip output + dictionary header.
-	// br:   Brotli, see https://github.com/go-chi/chi/pull/326
+	// br:   Brotli, see https://github.com/CarbonFactory/chi/pull/326
 
 	// HTTP 1.1 "deflate" (RFC 2616) stands for DEFLATE data (RFC 1951)
 	// wrapped with zlib (RFC 1950). The zlib wrapper uses Adler-32

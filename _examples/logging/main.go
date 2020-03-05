@@ -17,8 +17,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/CarbonFactory/chi"
+	"github.com/CarbonFactory/chi/middleware"
 	"github.com/sirupsen/logrus"
 )
 
