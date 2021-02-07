@@ -1,7 +1,6 @@
 package chi
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -78,9 +77,10 @@ func (mx *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rctx = mx.pool.Get().(*Context)
 	rctx.Reset()
 	rctx.Routes = mx
+	rctx.parentCtx = r.Context()
 
-	// NOTE: r.WithContext() causes 2 allocations and context.WithValue() causes 1 allocation
-	r = r.WithContext(context.WithValue(r.Context(), RouteCtxKey, rctx))
+	// NOTE: r.WithContext() causes 2 allocations
+	r = r.WithContext((*directContext)(rctx))
 
 	// Serve the request and once its done, put the request context back in the sync pool
 	mx.handler.ServeHTTP(w, r)
@@ -176,16 +176,16 @@ func (mx *Mux) Put(pattern string, handlerFn http.HandlerFunc) {
 	mx.handle(mPUT, pattern, handlerFn)
 }
 
-// Purge adds the route `pattern` that matches a PURGE http method to
-// execute the `handlerFn` http.HandlerFunc.
-func (mx *Mux) Purge(pattern string, handlerFn http.HandlerFunc) {
-	mx.handle(mPURGE, pattern, handlerFn)
-}
-
 // Trace adds the route `pattern` that matches a TRACE http method to
 // execute the `handlerFn` http.HandlerFunc.
 func (mx *Mux) Trace(pattern string, handlerFn http.HandlerFunc) {
 	mx.handle(mTRACE, pattern, handlerFn)
+}
+
+// Purge adds the route `pattern` that matches a PURGE http method to
+// execute the `handlerFn` http.HandlerFunc.
+func (mx *Mux) Purge(pattern string, handlerFn http.HandlerFunc) {
+	mx.handle(mPURGE, pattern, handlerFn)
 }
 
 // NotFound sets a custom http.HandlerFunc for routing paths that could
@@ -193,17 +193,16 @@ func (mx *Mux) Trace(pattern string, handlerFn http.HandlerFunc) {
 func (mx *Mux) NotFound(handlerFn http.HandlerFunc) {
 	// Build NotFound handler chain
 	m := mx
-	hFn := handlerFn
+	h := Chain(mx.middlewares...).HandlerFunc(handlerFn).ServeHTTP
 	if mx.inline && mx.parent != nil {
 		m = mx.parent
-		hFn = Chain(mx.middlewares...).HandlerFunc(hFn).ServeHTTP
 	}
 
 	// Update the notFoundHandler from this point forward
-	m.notFoundHandler = hFn
+	m.notFoundHandler = h
 	m.updateSubRoutes(func(subMux *Mux) {
 		if subMux.notFoundHandler == nil {
-			subMux.NotFound(hFn)
+			subMux.NotFound(h)
 		}
 	})
 }
@@ -213,17 +212,16 @@ func (mx *Mux) NotFound(handlerFn http.HandlerFunc) {
 func (mx *Mux) MethodNotAllowed(handlerFn http.HandlerFunc) {
 	// Build MethodNotAllowed handler chain
 	m := mx
-	hFn := handlerFn
+	h := Chain(mx.middlewares...).HandlerFunc(handlerFn).ServeHTTP
 	if mx.inline && mx.parent != nil {
 		m = mx.parent
-		hFn = Chain(mx.middlewares...).HandlerFunc(hFn).ServeHTTP
 	}
 
 	// Update the methodNotAllowedHandler from this point forward
-	m.methodNotAllowedHandler = hFn
+	m.methodNotAllowedHandler = h
 	m.updateSubRoutes(func(subMux *Mux) {
 		if subMux.methodNotAllowedHandler == nil {
-			subMux.MethodNotAllowed(hFn)
+			subMux.MethodNotAllowed(h)
 		}
 	})
 }
@@ -233,7 +231,7 @@ func (mx *Mux) With(middlewares ...func(http.Handler) http.Handler) Router {
 	// Similarly as in handle(), we must build the mux handler once additional
 	// middleware registration isn't allowed for this stack, like now.
 	if !mx.inline && mx.handler == nil {
-		mx.buildRouteHandler()
+		mx.updateRouteHandler()
 	}
 
 	// Copy middlewares from parent inline muxs
@@ -267,10 +265,11 @@ func (mx *Mux) Group(fn func(r Router)) Router {
 // along the `pattern` as a subrouter. Effectively, this is a short-hand
 // call to Mount. See _examples/.
 func (mx *Mux) Route(pattern string, fn func(r Router)) Router {
-	subRouter := NewRouter()
-	if fn != nil {
-		fn(subRouter)
+	if fn == nil {
+		panic(fmt.Sprintf("chi: attempting to Route() a nil subrouter on '%s'", pattern))
 	}
+	subRouter := NewRouter()
+	fn(subRouter)
 	mx.Mount(pattern, subRouter)
 	return subRouter
 }
@@ -283,6 +282,10 @@ func (mx *Mux) Route(pattern string, fn func(r Router)) Router {
 // routing at the `handler`, which in most cases is another chi.Router. As a result,
 // if you define two Mount() routes on the exact same pattern the mount will panic.
 func (mx *Mux) Mount(pattern string, handler http.Handler) {
+	if handler == nil {
+		panic(fmt.Sprintf("chi: attempting to Mount() a nil handler on '%s'", pattern))
+	}
+
 	// Provide runtime safety for ensuring a pattern isn't mounted on an existing
 	// routing pattern.
 	if mx.tree.findPattern(pattern+"*") || mx.tree.findPattern(pattern+"/*") {
@@ -300,7 +303,16 @@ func (mx *Mux) Mount(pattern string, handler http.Handler) {
 
 	mountHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rctx := RouteContext(r.Context())
+
+		// shift the url path past the previous subrouter
 		rctx.RoutePath = mx.nextRoutePath(rctx)
+
+		// reset the wildcard URLParam which connects the subrouter
+		n := len(rctx.URLParams.Keys) - 1
+		if n >= 0 && rctx.URLParams.Keys[n] == "*" && len(rctx.URLParams.Values) > n {
+			rctx.URLParams.Values[n] = ""
+		}
+
 		handler.ServeHTTP(w, r)
 	})
 
@@ -373,14 +385,6 @@ func (mx *Mux) MethodNotAllowedHandler() http.HandlerFunc {
 	return methodNotAllowedHandler
 }
 
-// buildRouteHandler builds the single mux handler that is a chain of the middleware
-// stack, as defined by calls to Use(), and the tree router (Mux) itself. After this
-// point, no other middlewares can be registered on this Mux's stack. But you can still
-// compose additional middlewares via Group()'s or using a chained middleware handler.
-func (mx *Mux) buildRouteHandler() {
-	mx.handler = chain(mx.middlewares, http.HandlerFunc(mx.routeHTTP))
-}
-
 // handle registers a http.Handler in the routing tree for a particular http method
 // and routing pattern.
 func (mx *Mux) handle(method methodTyp, pattern string, handler http.Handler) *node {
@@ -390,7 +394,7 @@ func (mx *Mux) handle(method methodTyp, pattern string, handler http.Handler) *n
 
 	// Build the computed routing handler for this routing pattern.
 	if !mx.inline && mx.handler == nil {
-		mx.buildRouteHandler()
+		mx.updateRouteHandler()
 	}
 
 	// Build endpoint handler with inline middlewares for the route
@@ -462,6 +466,14 @@ func (mx *Mux) updateSubRoutes(fn func(subMux *Mux)) {
 		}
 		fn(subMux)
 	}
+}
+
+// updateRouteHandler builds the single mux handler that is a chain of the middleware
+// stack, as defined by calls to Use(), and the tree router (Mux) itself. After this
+// point, no other middlewares can be registered on this Mux's stack. But you can still
+// compose additional middlewares via Group()'s or using a chained middleware handler.
+func (mx *Mux) updateRouteHandler() {
+	mx.handler = chain(mx.middlewares, http.HandlerFunc(mx.routeHTTP))
 }
 
 // methodNotAllowedHandler is a helper function to respond with a 405,
